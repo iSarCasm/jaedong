@@ -1,5 +1,6 @@
 var Metrics = require('other.metrics');
 var SmartSource = require('root.smartSource');
+var CapacityObject = require('root.capacityObject');
 
 var roleHarvester = {
   spawn: function(maxCost) {
@@ -24,19 +25,31 @@ var roleHarvester = {
             }
         }
         else {
-            var targets = creep.room.find(FIND_STRUCTURES, {
+            var targets;
+            var spawnTargets = creep.room.find(FIND_STRUCTURES, {
                     filter: (structure) => {
                         return (structure.structureType == STRUCTURE_EXTENSION ||
-                                structure.structureType == STRUCTURE_SPAWN ||
-                                structure.structureType == STRUCTURE_STORAGE) && structure.energy < structure.energyCapacity;
+                                structure.structureType == STRUCTURE_SPAWN) && CapacityObject.notFull(structure);
                     }
             });
+
+            if (spawnTargets.length == 0) {
+              targets = creep.room.find(FIND_STRUCTURES, {
+                      filter: (structure) => {
+                                  return structure.structureType == STRUCTURE_CONTAINER && CapacityObject.notFull(structure);
+                      }
+              });
+            } else {
+              targets = spawnTargets;
+            }
+
             targets = _.sortBy(targets, function(x) {
               return creep.pos.getRangeTo(x.pos);
             });
+            var target = targets[0];
             if(targets.length > 0) {
-                if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-                  creep.moveTo(targets[0]);
+                if(creep.transfer(target, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+                  creep.moveTo(target);
                 } else {
                   Metrics.addIncome(creep.carryCapacity);
                 }

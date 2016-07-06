@@ -1,5 +1,7 @@
 var PopulationControl = require('room.populationControl');
 var Metrics = require('other.metrics');
+var CapacityObject = require('root.capacityObject');
+
 
 var roleUpgrader = {
     spawn: function(maxCost) {
@@ -35,21 +37,36 @@ var roleUpgrader = {
             if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.controller);
             }
+            // if(creep.repair(Game.getObjectById("577ce76b822b2e681255df59")) == ERR_NOT_IN_RANGE) {
+            //     creep.moveTo(Game.getObjectById("577ce76b822b2e681255df59"));
+            // }
         }
-        else if (PopulationControl.CanTakeFromSpawn(creep.room)) {
-          var targets = creep.room.find(FIND_STRUCTURES, {
-                  filter: (structure) => {
-                      return (structure.structureType == STRUCTURE_EXTENSION ||
-                              structure.structureType == STRUCTURE_SPAWN ||
-                              structure.structureType == STRUCTURE_STORAGE) && structure.energy >= creep.carryCapacity;
-                  }
+        else {
+          var targets;
+          var storageTargets = creep.room.find(FIND_STRUCTURES, {
+            filter: (structure) => {
+                        return structure.structureType == STRUCTURE_CONTAINER && CapacityObject.notEmpty(structure);
+            }
           });
+
+          if (storageTargets.length == 0 && PopulationControl.CanTakeFromSpawn(creep.room)) {
+            targets = creep.room.find(FIND_STRUCTURES, {
+                    filter: (structure) => {
+                        return (structure.structureType == STRUCTURE_EXTENSION ||
+                                structure.structureType == STRUCTURE_SPAWN) && CapacityObject.notEmpty(structure);
+                    }
+            });
+          } else if (storageTargets.length != 0) {
+            targets = storageTargets;
+          }
+
           targets = _.sortBy(targets, function(x) {
             return creep.pos.getRangeTo(x.pos);
           });
           var target = targets[0];
+
           if (target != undefined) {
-            if(target.transferEnergy(creep, creep.carryCapacity) == ERR_NOT_IN_RANGE) {
+            if(CapacityObject.transferEnergy(target, creep) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(target);
             }
           }

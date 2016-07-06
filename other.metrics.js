@@ -2,7 +2,7 @@ var Citizen = require('root.citizen');
 var Room = require('root.room');
 
 var Metrcis = {
-  localInterval: 200,
+  localInterval: 1500,
 
   run: function(room) {
     if (Game.time > Memory.lastLocalMetricsTick + this.localInterval) {

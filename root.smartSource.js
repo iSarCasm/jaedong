@@ -19,7 +19,11 @@ var SmartSource = {
   },
 
   SourceCarrierCapacity: function(source) {
-    return this.SourceWorkerCapacity(source) * (Game.spawns.Spawn1.pos.getRangeTo(source.pos.x, source.pos.y) / 15);
+    var additionalDemand = 0;
+    if (Memory.sources[source.id]) {
+      additionalDemand += Memory.sources[source.id]["additionalDemand"];
+    }
+    return (this.SourceWorkerCapacity(source) * (Game.spawns.Spawn1.pos.getRangeTo(source.pos.x, source.pos.y) / 15)) + additionalDemand;
   },
 
   NeedsWorkers: function(room) {
@@ -59,15 +63,15 @@ var SmartSource = {
   },
 
   SourceForWorker: function(worker, room) {
-    if (worker == undefined) { return; }
+    if (worker.memory == undefined) { return; }
     var harvest_workers =  _.filter(Game.creeps, (creep) => creep.memory.role == 'harvest_worker');
     var sources = room.find(FIND_SOURCES);
     var source = -1;
     var needed_capacity = 0;
     for(var i = 0; i < sources.length; i++) {
       needed_capacity = this.SourceWorkerCapacity(sources[i]);
-      _.forEach(harvest_workers, function(worker) {
-        if (worker.memory.targetSource == sources[i].id) {
+      _.forEach(harvest_workers, function(_worker) {
+        if (_worker.memory.targetSource == sources[i].id) {
           needed_capacity -= 1;
         }
       });
@@ -79,15 +83,15 @@ var SmartSource = {
   },
 
   SourceForCarrier: function(carrier, room) {
-    if (carrier == undefined) { return; }
+    if (carrier.memory == undefined) { return; }
     var harvest_carriers =  _.filter(Game.creeps, (creep) => creep.memory.role == 'harvest_carrier');
     var sources = room.find(FIND_SOURCES);
     var source = -1;
     var needed_capacity = 0;
     for(var i = 0; i < sources.length; i++) {
       needed_capacity = this.SourceCarrierCapacity(sources[i]);
-      _.forEach(harvest_carriers, function(worker) {
-        if (worker.memory.targetSource == sources[i].id) {
+      _.forEach(harvest_carriers, function(_worker) {
+        if (_worker.memory.targetSource == sources[i].id) {
           needed_capacity -= 1;
         }
       });
