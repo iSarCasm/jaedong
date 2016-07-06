@@ -1,4 +1,6 @@
 var SmartSource = require('root.smartSource');
+var Metrics = require('other.metrics');
+
 
 var HarvesterWorker = {
     spawn: function(maxCost) {
@@ -9,7 +11,7 @@ var HarvesterWorker = {
         body_parts.push(WORK);
       }
       var newCreep = Game.spawns.Spawn1.createCreep(body_parts, "HarvestWorker "+(Game.time % 1000), {role: 'harvest_worker'});
-      if (typeof newCreep != "number") { SmartSource.SourceForWorker(newCreep, Game.spawns.Spawn1.room); }
+      if (typeof newCreep != "number") { SmartSource.SourceForWorker(newCreep, Game.spawns.Spawn1.room); Metrics.addBirth(); }
       return newCreep;
     },
 
@@ -24,11 +26,13 @@ var HarvesterWorker = {
         }
         else {
           creep.drop(RESOURCE_ENERGY);
+          Metrics.addDrain(creep.carryCapacity);
         }
       } else {
         SmartSource.SourceForWorker(creep, creep.room);
         console.log("I have no source!");
         if (creep.memory.targetSource != undefined) {
+          Metrics.addSuicide();
           creep.suicide();
         }
       }

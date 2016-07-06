@@ -2,8 +2,13 @@ var Metrics = require('other.metrics');
 
 
 var roleHarvester = {
+    spawn: function(maxCost) {
+      var newCreep = Game.spawns.Spawn1.createCreep([WORK, MOVE, CARRY, CARRY], "Harvester "+(Game.time % 1000), {role: 'harvester'});
+      if (typeof newCreep != "number") { Metrics.addBirth(); }
+      return newCreep;
+    },
 
-    /** @param {Creep} creep **/
+
     run: function(creep) {
 	    if(creep.carry.energy < creep.carryCapacity) {
           // console.log("My name is: " + creep.name + " and im going to SOURCE");

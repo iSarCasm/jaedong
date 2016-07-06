@@ -1,8 +1,14 @@
 var PopulationControl = require('room.populationControl');
+var Metrics = require('other.metrics');
 
 var roleUpgrader = {
+    spawn: function(maxCost) {
+      var newCreep = Game.spawns.Spawn1.createCreep([WORK, MOVE, CARRY, CARRY], "Upgrader "+(Game.time % 1000), {role: 'upgrader'});
+      if (typeof newCreep != "number") { Metrics.addBirth(); }
+      return newCreep;
+    },
 
-    /** @param {Creep} creep **/
+
     run: function(creep) {
         if(creep.memory.upgrading && creep.carry.energy == 0) {
             creep.memory.upgrading = false;

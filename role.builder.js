@@ -1,8 +1,14 @@
 var PopulationControl = require('room.populationControl');
+var Metrics = require('other.metrics');
 
 var roleBuilder = {
+  spawn: function(maxCost) {
+    var newCreep = Game.spawns.Spawn1.createCreep([WORK, MOVE, CARRY, CARRY], "Builder  "+(Game.time % 1000), {role: 'builder'});
+    if (typeof newCreep != "number") { Metrics.addBirth(); }
+    return newCreep;
+  },
 
-  /** @param {Creep} creep **/
+
   run: function(creep) {
       if(creep.memory.building && creep.carry.energy == 0) {
             creep.memory.building = false;

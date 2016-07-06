@@ -15,6 +15,27 @@ var Citizen = {
       }
     });
     return totalCost;
+  },
+
+  isHarvester: function(creep) {
+    switch(creep.memory.role) {
+      case "harvester":
+        return true;
+      case "harvest_worker":
+        return true;
+      case "harvest_carrier":
+        return true;
+      default:
+        return false;
+    }
+  },
+
+  isUpgrader: function(creep) {
+    return creep.memory.role == "upgrader";
+  },
+
+  isBuilder: function(creep) {
+    return creep.memory.role == "builder";
   }
 };
 

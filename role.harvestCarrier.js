@@ -10,7 +10,7 @@ var roleHarvester = {
       body_parts.push(CARRY);
     }
     var newCreep = Game.spawns.Spawn1.createCreep(body_parts, "HarvestCarrier "+(Game.time % 1000), {role: 'harvest_carrier'});
-    if (typeof newCreep != "number") { SmartSource.SourceForCarrier(newCreep, Game.spawns.Spawn1.room); }
+    if (typeof newCreep != "number") { SmartSource.SourceForCarrier(newCreep, Game.spawns.Spawn1.room); Metrics.addBirth(); }
     return newCreep;
   },
 

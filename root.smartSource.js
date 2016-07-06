@@ -59,6 +59,7 @@ var SmartSource = {
   },
 
   SourceForWorker: function(worker, room) {
+    if (worker == undefined) { return; }
     var harvest_workers =  _.filter(Game.creeps, (creep) => creep.memory.role == 'harvest_worker');
     var sources = room.find(FIND_SOURCES);
     var source = -1;
@@ -78,6 +79,7 @@ var SmartSource = {
   },
 
   SourceForCarrier: function(carrier, room) {
+    if (carrier == undefined) { return; }
     var harvest_carriers =  _.filter(Game.creeps, (creep) => creep.memory.role == 'harvest_carrier');
     var sources = room.find(FIND_SOURCES);
     var source = -1;
