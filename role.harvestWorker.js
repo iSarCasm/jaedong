@@ -11,7 +11,7 @@ var HarvesterWorker = {
         body_parts.push(WORK);
       }
       var newCreep = Game.spawns.Spawn1.createCreep(body_parts, "HarvestWorker "+(Game.time % 1000), {role: 'harvest_worker'});
-      if (typeof newCreep != "number") { SmartSource.SourceForWorker(newCreep, Game.spawns.Spawn1.room); Metrics.addBirth(); }
+      if (typeof newCreep != "number") { SmartSource.SourceForWorker(newCreep, Game.spawns.Spawn1.room); Metrics.addBirth(workParts*100 + 100); }
       return newCreep;
     },
 

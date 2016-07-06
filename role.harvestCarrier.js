@@ -10,7 +10,7 @@ var roleHarvester = {
       body_parts.push(CARRY);
     }
     var newCreep = Game.spawns.Spawn1.createCreep(body_parts, "HarvestCarrier "+(Game.time % 1000), {role: 'harvest_carrier'});
-    if (typeof newCreep != "number") { SmartSource.SourceForCarrier(newCreep, Game.spawns.Spawn1.room); Metrics.addBirth(); }
+    if (typeof newCreep != "number") { SmartSource.SourceForCarrier(newCreep, Game.spawns.Spawn1.room); Metrics.addBirth(workParts * 100); }
     return newCreep;
   },
 
@@ -30,6 +30,9 @@ var roleHarvester = {
                                 structure.structureType == STRUCTURE_SPAWN ||
                                 structure.structureType == STRUCTURE_STORAGE) && structure.energy < structure.energyCapacity;
                     }
+            });
+            targets = _.sortBy(targets, function(x) {
+              return creep.pos.getRangeTo(x.pos);
             });
             if(targets.length > 0) {
                 if(creep.transfer(targets[0], RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {

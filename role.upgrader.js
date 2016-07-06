@@ -3,8 +3,22 @@ var Metrics = require('other.metrics');
 
 var roleUpgrader = {
     spawn: function(maxCost) {
-      var newCreep = Game.spawns.Spawn1.createCreep([WORK, MOVE, CARRY, CARRY], "Upgrader "+(Game.time % 1000), {role: 'upgrader'});
-      if (typeof newCreep != "number") { Metrics.addBirth(); }
+      var body_parts = [WORK, MOVE, CARRY];
+      var energy = maxCost - BODYPART_COST[MOVE] - BODYPART_COST[WORK] - BODYPART_COST[CARRY];
+      var next_part = WORK;
+      while(energy >= BODYPART_COST[next_part]) {
+        energy -= BODYPART_COST[next_part];
+        body_parts.push(next_part);
+        if (next_part == WORK) {
+          next_part = CARRY;
+        } else if (next_part == MOVE) {
+          next_part = WORK;
+        } else {
+          next_part = MOVE;
+        }
+      }
+      var newCreep = Game.spawns.Spawn1.createCreep(body_parts, "Upgrader "+(Game.time % 1000), {role: 'upgrader'});
+      if (typeof newCreep != "number") { Metrics.addBirth(maxCost - energy); }
       return newCreep;
     },
 
@@ -29,6 +43,9 @@ var roleUpgrader = {
                               structure.structureType == STRUCTURE_SPAWN ||
                               structure.structureType == STRUCTURE_STORAGE) && structure.energy >= creep.carryCapacity;
                   }
+          });
+          targets = _.sortBy(targets, function(x) {
+            return creep.pos.getRangeTo(x.pos);
           });
           var target = targets[0];
           if (target != undefined) {

@@ -18,7 +18,7 @@ var CitizenControl = {
 
   DemandsMoreBuilders: function(room) {
     var builders = _.filter(Game.creeps, (creep) => creep.memory.role == 'builder');
-    return builders.length < 8;
+    return builders.length < 0;
   },
 
   CanTakeFromSpawn: function(room) {

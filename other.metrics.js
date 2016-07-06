@@ -18,6 +18,8 @@ var Metrcis = {
       var harvest_workers = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvest_worker').length;
       var harvest_carriers = _.filter(Game.creeps, (creep) => creep.memory.role == 'harvest_carrier').length;
 
+      var total = upgraders + builders + harvesters + harvest_workers + harvest_carriers;
+
       var harvestersCost = _.reduce(_.filter(Game.creeps, (creep) => Citizen.isHarvester(creep)), function(sum, n) {
         return sum + Citizen.cost(n);
       }, 0);
@@ -32,7 +34,7 @@ var Metrcis = {
 
       var message1 = "Metrics for ticks " + tick + " - " + Game.time + ":\n";
       message1 += "=== Population ===\n";
-      message1 += "    Total: " + (Game.creeps.length) + "\n";
+      message1 += "    Total: " + total + "\n";
       message1 += "    Harvest Workers: " + harvest_workers + "\n";
       message1 += "    Harvest Carriers: " + harvest_carriers + "\n";
       message1 += "    Harvesters: " + harvesters + "\n";
@@ -41,25 +43,26 @@ var Metrcis = {
       message1 += "\n";
       message1 += "    Creep birth: " + Memory.Birth + "\n";
       message1 += "    Creep death: " + Memory.Death + "\n";
-      message1 += "    Sucides: " + Memory.Suicide + "\n";
+      message1 += "    Suicides: " + Memory.Suicide + "\n";
 
       var message2 = "=== Economy ===\n";
+      message2 += "    Income: " + Memory.Income + "\n";
+      message2 += "    Gain from recycle: " + Memory.GainFromRecycle + "\n";
+      message2 += "    -------------------------\n";
+      message2 += "    Controller growth: " + (room.controller.progress - progress) + "\n";
+      message2 += "    Spent on building: " + Memory.Building + "\n";
+      message2 += "    Spent on repair: " + Memory.Repair + "\n";
       message2 += "    Spent on new creeps: " + Memory.SpentOnNewCreeps + "\n";
       message2 += "    Spent on renewal: " + Memory.SpentOnRenewal + "\n";
-      message2 += "    Gain from recycle: " + Memory.GainFromRecycle + "\n";
       message2 += "\n";
-      message2 += "    Income: " + Memory.Income + "\n";
       message2 += "    Income per Harvester: " + (Memory.Income / (harvesters + harvest_workers + harvest_carriers)) + "\n";
       message2 += "    Harvesters net worth: " + harvestersCost + "\n";
       message2 += "    Harvesting Effectivness: " + (Memory.Income / harvestersCost) + "\n";
       message2 += "\n";
-      message2 += "    Controller growth: " + (room.controller.progress - progress) + "\n";
       message2 += "    Growth per Upgrader: " + ((room.controller.progress - progress) / upgraders) + "\n"
       message2 += "    Upgraders net worth: " + upgradersCost + "\n";
       message2 += "    Upgrading Effectivness: " + ((room.controller.progress - progress) / upgradersCost) + "\n";
       message2 += "\n";
-      message2 += "    Spent on building: " + Memory.Building + "\n";
-      message2 += "    Spent on repair: " + Memory.Repair + "\n";
       message2 += "    Work per Builder: " + ((Memory.Building + Memory.Repair) / builders) + "\n"
       message2 += "    Builders net worth: " + buildersCost + "\n";
       message2 += "    Building Effectivness: " + (((Memory.Building + Memory.Repair) / builders) / buildersCost) + "\n";
@@ -70,9 +73,11 @@ var Metrcis = {
 
       console.log(message1);
       console.log(message2);
+      console.log(message3);
 
       Game.notify(message1);
       Game.notify(message2);
+      Game.notify(message3);
 
       this.reset();
     }
@@ -94,8 +99,9 @@ var Metrcis = {
     Memory.Repair += income;
   },
 
-  addBirth: function() {
+  addBirth: function(cost) {
     Memory.Birth += 1;
+    Memory.SpentOnNewCreeps += cost;
   },
 
   addDeath: function() {
